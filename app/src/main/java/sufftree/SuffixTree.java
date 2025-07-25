@@ -56,13 +56,27 @@ public class SuffixTree {
         for (int i = 0; i < n; i++) {
             head = addSuffix(head, i);
         }
-
     }
 
-    public Node addSuffix(Node head, int start) {
+    private void addLeaf(Node parent, int start, int end, int depth) {
+        Node child = new Node(parent, start, end, depth);
+        parent.putChild(s.charAt(child.start), child);
+    }
+
+    /* Here child node must be child of parent node */
+    private Node divideEdge(Node parent, Node child, int start, int end, int depth) {
+        Node newInternal = new Node(parent, start, end, depth);
+        newInternal.putChild(s.charAt(newInternal.end + 1), child);
+        parent.putChild(s.charAt(newInternal.start), newInternal);
+        child.parent = newInternal;
+        child.start = newInternal.end + 1;
+        child.updateLength();
+        return newInternal;
+    }
+
+    private Node addSuffix(Node head, int start) {
         Node newHead = slowScan(fastScan(head), start);
-        Node newChild = new Node(newHead, start + newHead.depth, s.length()-1, s.length() - start);
-        newHead.putChild(s.charAt(newChild.start), newChild);
+        addLeaf(newHead, start + newHead.depth, s.length()-1, s.length() - start);
         return newHead;
     }
 
@@ -93,14 +107,8 @@ public class SuffixTree {
 
         if (skipped > 0) {
             Node next = curNode.getChild(s.charAt(curPos));
-            Node newInternal = new Node(curNode, next.start, next.start + skipped - 1, curNode.depth + skipped);
-            newInternal.putChild(s.charAt(newInternal.end + 1), next);
-            curNode.putChild(s.charAt(newInternal.start), newInternal);
-            next.parent = newInternal;
-            next.start = newInternal.end + 1;
-            next.updateLength();
-
-            curNode = newInternal;
+            curNode = divideEdge(curNode, next,
+                    next.start, next.start + skipped - 1, curNode.depth + skipped);
         }
         head.suf = curNode;
 
@@ -124,14 +132,8 @@ public class SuffixTree {
                 curNode = child;
             }
             else {
-                Node newInternal = new Node(curNode, child.start, child.start + edgePos - 1,
+                curNode = divideEdge(curNode, child, child.start, child.start + edgePos - 1,
                         curNode.depth + edgePos);
-                newInternal.putChild(s.charAt(newInternal.end + 1), child);
-                curNode.putChild(s.charAt(newInternal.start), newInternal);
-                child.parent = newInternal;
-                child.start = newInternal.end + 1;
-                child.updateLength();
-                curNode = newInternal;
                 break;
             }
         }

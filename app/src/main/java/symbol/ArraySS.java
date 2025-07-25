@@ -14,7 +14,7 @@ public class ArraySS implements SymbolSeq {
         }
     }
 
-    private ArraySS(ArrayList<Symbol> s) {
+    public ArraySS(ArrayList<Symbol> s) {
         this.s = s;
     }
 
