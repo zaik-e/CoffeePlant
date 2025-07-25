@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import sufftree.SuffixTree;
+import symbol.ArraySS;
+import symbol.SymbolSeq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +24,10 @@ class MainTest {
     @ParameterizedTest(name = "Input: \"{0}\"")
     @MethodSource("generateRandomStrings")
     void testRandomContains(String input) {
-        SuffixTree st = new SuffixTree(input);
+        SymbolSeq ss = new ArraySS(input);
+        SuffixTree st = new SuffixTree(ss);
         for (int i = 0; i < input.length() - 1; i++) {
-            assertTrue(st.containsSuffix(input.substring(i)));
+            assertTrue(st.containsSuffix(ss.substring(i)));
         }
     }
 

@@ -17,7 +17,7 @@ public class UnicodeSymbol implements Symbol {
 
     @Override
     public Character toCharacter() {
-        return null;
+        return (char) codePoint;
     }
 
     @Override

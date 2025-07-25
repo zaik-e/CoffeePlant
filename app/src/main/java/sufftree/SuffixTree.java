@@ -1,17 +1,20 @@
 package sufftree;
 
+import symbol.Symbol;
+import symbol.SymbolSeq;
+
 import java.util.*;
 
 public class SuffixTree {
     Node root;
-    String s;
+    SymbolSeq s;
 
-    public SuffixTree(String s) {
+    public SuffixTree(SymbolSeq s) {
         this.s = s;
         build();
     }
 
-    private boolean containsSuffAux(String suff, int index, Node node) {
+    private boolean containsSuffAux(SymbolSeq suff, int index, Node node) {
         if (index == suff.length() && node.isLeaf()) {
             return true;
         }
@@ -22,7 +25,7 @@ public class SuffixTree {
         int currIndex = index;
         int sourceIndex = next.start;
         while (sourceIndex <= next.end && currIndex < suff.length()) {
-            if (s.charAt(sourceIndex) != suff.charAt(currIndex)) {
+            if (!(s.charAt(sourceIndex).equals(suff.charAt(currIndex)))) {
                 return false;
             }
             currIndex++;
@@ -35,7 +38,7 @@ public class SuffixTree {
      * Check if given string with end marker is a suffix representing in
      * this suffix tree.
     * */
-    public boolean containsSuffix(String suff) {
+    public boolean containsSuffix(SymbolSeq suff) {
         if (suff.isEmpty()) {
             return true;
         }
@@ -113,7 +116,7 @@ public class SuffixTree {
             int edgePos = 0;
 
             while (curPos < s.length() && edgePos < child.length &&
-                    s.charAt(curPos) == s.charAt(child.start + edgePos)) {
+                    s.charAt(curPos).equals(s.charAt(child.start + edgePos))) {
                 curPos++;
                 edgePos++;
             }
@@ -162,13 +165,13 @@ public class SuffixTree {
         int total = node.countChildren();
         int idx = 0;
 
-        List<Character> keys = new ArrayList<>(node.getTransitions());
-        Collections.sort(keys);
+        List<Symbol> keys = new ArrayList<>(node.getTransitions());
+//        Collections.sort(keys);
 
-        for (Character ch : keys) {
+        for (Symbol ch : keys) {
             Node child = node.getChild(ch);
             boolean lastChild = (++idx == total);
-            printTreeWithEdge(child, childPrefix, lastChild, ch, visited);
+            printTreeWithEdge(child, childPrefix, lastChild, ch.toCharacter(), visited);
         }
     }
 
@@ -191,11 +194,11 @@ public class SuffixTree {
 
         String childPrefix = prefix + (isLast ? "    " : "│   ");
 
-        List<Character> keys = new ArrayList<>(node.getTransitions());
-        Collections.sort(keys);
+        List<Symbol> keys = new ArrayList<>(node.getTransitions());
+//        Collections.sort(keys);
         for (int i = 0; i < keys.size(); i++) {
-            char k = keys.get(i);
-            printTreeWithEdge(node.getChild(k), childPrefix, i == keys.size() - 1, k, visited);
+            Symbol k = keys.get(i);
+            printTreeWithEdge(node.getChild(k), childPrefix, i == keys.size() - 1, k.toCharacter(), visited);
         }
     }
 

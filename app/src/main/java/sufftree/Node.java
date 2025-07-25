@@ -2,6 +2,8 @@ package sufftree;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import symbol.Symbol;
+import symbol.SymbolSeq;
 
 import java.util.*;
 
@@ -11,7 +13,7 @@ public class Node {
     public int length;
     public int depth;
     public @Nullable Node suf;
-    private @NotNull HashMap<Character, Node> children;
+    private @NotNull HashMap<Symbol, Node> children;
 
     public Node(@Nullable Node parent, int start, int end, int depth) {
         this.parent = parent;
@@ -26,15 +28,15 @@ public class Node {
         length = end - start + 1;
     }
 
-    public boolean hasChild(Character c) {
+    public boolean hasChild(Symbol c) {
         return children.containsKey(c);
     }
 
-    public Node getChild(Character c) {
+    public Node getChild(Symbol c) {
         return children.get(c);
     }
 
-    public void putChild(Character c, Node child) {
+    public void putChild(Symbol c, Node child) {
         children.put(c, child);
     }
 
@@ -46,7 +48,7 @@ public class Node {
         return children.size();
     }
 
-    public Set<Character> getTransitions() {
+    public Set<Symbol> getTransitions() {
         return children.keySet();
     }
 

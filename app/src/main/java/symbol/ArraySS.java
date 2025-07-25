@@ -14,6 +14,10 @@ public class ArraySS implements SymbolSeq {
         }
     }
 
+    private ArraySS(ArrayList<Symbol> s) {
+        this.s = s;
+    }
+
     @Override
     public Symbol charAt(int index) {
         return s.get(index);
@@ -27,6 +31,15 @@ public class ArraySS implements SymbolSeq {
     @Override
     public boolean isEmpty() {
         return s.isEmpty();
+    }
+
+    @Override
+    public SymbolSeq substring(int start) {
+        ArrayList<Symbol> newList = new ArrayList<>();
+        for (int i = start; i < s.size(); i++) {
+            newList.add(s.get(i));
+        }
+        return new ArraySS(newList);
     }
 
     @Override

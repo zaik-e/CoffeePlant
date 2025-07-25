@@ -2,6 +2,7 @@ package sufftree;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import symbol.Symbol;
 
 public class SuperNode extends Node {
     Node child;
@@ -16,12 +17,12 @@ public class SuperNode extends Node {
     }
 
     @Override
-    public boolean hasChild(Character c) {
+    public boolean hasChild(Symbol c) {
         return true;
     }
 
     @Override
-    public Node getChild(Character c) {
+    public Node getChild(Symbol c) {
         return child;
     }
 }
