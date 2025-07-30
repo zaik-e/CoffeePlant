@@ -1,5 +1,6 @@
 package sufftree;
 
+import symbol.ArraySS;
 import symbol.Symbol;
 import symbol.SymbolSeq;
 
@@ -11,6 +12,11 @@ public class SuffixTree {
 
     public SuffixTree(SymbolSeq s) {
         this.s = s;
+        build();
+    }
+
+    protected SuffixTree() {
+        this.s = new ArraySS();
         build();
     }
 
@@ -45,7 +51,7 @@ public class SuffixTree {
         return containsSuffAux(suff, 0, root);
     }
 
-    private void build() {
+    protected void build() {
         SuperNode superRoot = new SuperNode();
         this.root = new Node(superRoot, 0, -1, 0);
         root.suf = superRoot;
@@ -58,13 +64,13 @@ public class SuffixTree {
         }
     }
 
-    private void addLeaf(Node parent, int start, int end, int depth) {
+    protected void addLeaf(Node parent, int start, int end, int depth) {
         Node child = new Node(parent, start, end, depth);
         parent.putChild(s.charAt(child.start), child);
     }
 
     /* Here child node must be child of parent node */
-    private Node divideEdge(Node parent, Node child, int start, int end, int depth) {
+    protected Node divideEdge(Node parent, Node child, int start, int end, int depth) {
         Node newInternal = new Node(parent, start, end, depth);
         newInternal.putChild(s.charAt(newInternal.end + 1), child);
         parent.putChild(s.charAt(newInternal.start), newInternal);
@@ -74,13 +80,13 @@ public class SuffixTree {
         return newInternal;
     }
 
-    private Node addSuffix(Node head, int start) {
+    protected Node addSuffix(Node head, int start) {
         Node newHead = slowScan(fastScan(head), start);
         addLeaf(newHead, start + newHead.depth, s.length()-1, s.length() - start);
         return newHead;
     }
 
-    private Node fastScan(Node head) {
+    protected Node fastScan(Node head) {
         if (head.equals(root)) {
             return head;
         }
@@ -115,7 +121,7 @@ public class SuffixTree {
         return curNode;
     }
 
-    private Node slowScan(Node node, int start) {
+    protected Node slowScan(Node node, int start) {
         Node curNode = node;
         int curPos = start + node.depth;
 

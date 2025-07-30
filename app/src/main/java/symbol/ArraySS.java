@@ -18,6 +18,10 @@ public class ArraySS implements SymbolSeq {
         this.s = s;
     }
 
+    public ArraySS() {
+        this.s = new ArrayList<>();
+    }
+
     @Override
     public Symbol charAt(int index) {
         return s.get(index);

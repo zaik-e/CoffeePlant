@@ -15,6 +15,10 @@ public class Node {
     public @Nullable Node suf;
     private @NotNull HashMap<Symbol, Node> children;
 
+    /* can be empty */
+    private @NotNull Set<Integer> annotation;
+    public final int usedStrIndex;
+
     public Node(@Nullable Node parent, int start, int end, int depth) {
         this.parent = parent;
         this.start = start;
@@ -22,7 +26,22 @@ public class Node {
         this.depth = depth;
         this.children = new HashMap<>();
         this.length = end - start + 1;
+        this.usedStrIndex = -1;
+        annotation = new HashSet<>();
     }
+
+    public Node(@Nullable Node parent, int usedStrIndex, int start, int end, int depth) {
+        this.parent = parent;
+        this.start = start;
+        this.end = end;
+        this.depth = depth;
+        this.children = new HashMap<>();
+        this.length = end - start + 1;
+        this.usedStrIndex = usedStrIndex;
+        annotation = new HashSet<>();
+        annotation.add(usedStrIndex);
+    }
+
 
     public void updateLength() {
         length = end - start + 1;
@@ -50,6 +69,19 @@ public class Node {
 
     public Set<Symbol> getTransitions() {
         return children.keySet();
+    }
+
+    public void copyAnnotation(Node node) {
+        this.annotation = new HashSet<>(node.annotation);
+        annotation.add(usedStrIndex);
+    }
+
+    public void addToAnnotation(int index) {
+        annotation.add(index);
+    }
+
+    public boolean containsAnnotation(int index) {
+        return annotation.contains(index);
     }
 
 //    public boolean equals(Object other) {

@@ -3,6 +3,10 @@ package symbol;
 public class UnicodeSymbol implements Symbol {
     int codePoint;
 
+    public static UnicodeSymbol createEndmarker(int count) {
+        return new UnicodeSymbol(-1 * count);
+    }
+
     public UnicodeSymbol(Character c) {
         codePoint = Character.codePointAt(new char[]{c.charValue()}, 0);
     }
@@ -18,6 +22,11 @@ public class UnicodeSymbol implements Symbol {
     @Override
     public Character toCharacter() {
         return (char) codePoint;
+    }
+
+    @Override
+    public boolean isEndmarker() {
+        return (codePoint <= 0);
     }
 
     @Override
