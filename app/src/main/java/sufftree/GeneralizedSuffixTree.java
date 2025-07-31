@@ -14,17 +14,17 @@ public class GeneralizedSuffixTree {
 
     public GeneralizedSuffixTree(List<SymbolSeq> ss) {
         this.ss = ss;
-        build();
+//        build();
     }
 
     protected GeneralizedSuffixTree() {
         this.ss = new ArrayList<>();
-        build();
+//        build();
     }
 
-    /*
-    private boolean containsSuffAux(SymbolSeq suff, int index, Node node) {
-        if (index == suff.length() && node.isLeaf()) {
+
+    private boolean containsSuffAux(SymbolSeq suff, int index, int ann, Node node) {
+        if (index == suff.length() && node.isLeaf() && node.containsAnnotation(ann)) {
             return true;
         }
         if (!node.hasChild(suff.charAt(index))) {
@@ -34,31 +34,32 @@ public class GeneralizedSuffixTree {
         int currIndex = index;
         int sourceIndex = next.start;
         while (sourceIndex <= next.end && currIndex < suff.length()) {
-            if (!(s.charAt(sourceIndex).equals(suff.charAt(currIndex)))) {
+            if (!(ss.get(next.usedStrIndex).charAt(sourceIndex).equals(suff.charAt(currIndex)))) {
                 return false;
             }
             currIndex++;
             sourceIndex++;
         }
-        return containsSuffAux(suff, currIndex, next);
+        return containsSuffAux(suff, currIndex, ann, next);
     }
-*/
+
     /**
      * Check if given string with end marker is a suffix representing in
      * this suffix tree.
+     * Do not use without endmarker in input string.
      * */
-    /*
-    public boolean containsSuffix(SymbolSeq suff) {
+
+    public boolean containsSuffix(SymbolSeq suff, int ann) {
         if (suff.isEmpty()) {
             return true;
         }
-        return containsSuffAux(suff, 0, root);
+        return containsSuffAux(suff, 0, ann, root);
     }
-     */
 
 
 
-    protected void build() {
+
+    public void build() {
         SuperNode superRoot = new SuperNode();
         this.root = new Node(superRoot, 0, -1, 0);
         root.suf = superRoot;
@@ -73,10 +74,11 @@ public class GeneralizedSuffixTree {
             int n = str.length();
             for (int i = 0; i < n; i++) {
                 head = addSuffix(head, i);
-                print();
+//                System.out.println(head);
+//                print();
             }
-            print();
-            System.out.println("----------------");
+//            print();
+//            System.out.println("----------------");
 
         }
 
@@ -97,9 +99,9 @@ public class GeneralizedSuffixTree {
         parent.putChild(ss.get(newInternal.usedStrIndex).charAt(newInternal.start), newInternal);
         child.parent = newInternal;
         child.updateLength();
-        System.out.println(parent.childsToString());
-        System.out.println(newInternal);
-        System.out.println(child);
+//        System.out.println(parent.childsToString());
+//        System.out.println(newInternal);
+//        System.out.println(child);
         return newInternal;
     }
 
@@ -126,19 +128,18 @@ public class GeneralizedSuffixTree {
 
         Node curNode = head.parent.suf;
 
-        Node nextNode = curNode.getChild(ss.get(strInSet).charAt(curPos));
+        Node nextNode = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
         while (skipped >= nextNode.length) {
             skipped -= nextNode.length;
             curPos += nextNode.length;
             curNode = nextNode;
             curNode.addToAnnotation(strInSet);
-            nextNode = curNode.getChild(ss.get(strInSet).charAt(curPos));
-
+            nextNode = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
         }
 
         if (skipped > 0) {
-            Node next = curNode.getChild(ss.get(strInSet).charAt(curPos));
-            curNode = divideEdge(curNode, next, strInSet,
+            Node next = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
+            curNode = divideEdge(curNode, next, next.usedStrIndex,
                     next.start, next.start + skipped - 1, curNode.depth + skipped);
         }
         head.suf = curNode;
@@ -150,8 +151,11 @@ public class GeneralizedSuffixTree {
         Node curNode = node;
         curNode.addToAnnotation(strInSet);
         int curPos = start + node.depth;
-
+//        System.out.println("---" + node);
+//        System.out.println("---" + s.charAt(curPos).toCharacter());
+//        System.out.println("---" + start);
         while (curNode.hasChild(s.charAt(curPos))) {
+//            System.out.println("curnode " + curNode);
             Node child = curNode.getChild(s.charAt(curPos));
             int edgePos = 0;
 
@@ -164,8 +168,11 @@ public class GeneralizedSuffixTree {
                 curNode = child;
             }
             else {
-                curNode = divideEdge(curNode, child, strInSet, child.start, child.start + edgePos - 1,
+//                System.out.println(curNode);
+//                System.out.println(child);
+                curNode = divideEdge(curNode, child, child.usedStrIndex, child.start, child.start + edgePos - 1,
                         curNode.depth + edgePos);
+//                System.out.println(curNode);
                 break;
             }
             curNode.addToAnnotation(strInSet);
