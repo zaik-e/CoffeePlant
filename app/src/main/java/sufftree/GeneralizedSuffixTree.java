@@ -14,12 +14,12 @@ public class GeneralizedSuffixTree {
 
     public GeneralizedSuffixTree(List<SymbolSeq> ss) {
         this.ss = ss;
-//        build();
+        build();
     }
 
     protected GeneralizedSuffixTree() {
         this.ss = new ArrayList<>();
-//        build();
+        build();
     }
 
 
@@ -40,7 +40,11 @@ public class GeneralizedSuffixTree {
             currIndex++;
             sourceIndex++;
         }
-        return containsSuffAux(suff, currIndex, ann, next);
+
+        if (sourceIndex == next.end + 1)
+            return containsSuffAux(suff, currIndex, ann, next);
+        else
+            return false;
     }
 
     /**
@@ -56,7 +60,38 @@ public class GeneralizedSuffixTree {
         return containsSuffAux(suff, 0, ann, root);
     }
 
+    private Node auxFindLCSS() {
+        int count = ss.size();
+        Stack<Node> activeNodes = new Stack<>();
+        activeNodes.add(root);
+        Node maxNode = root;
+        while (!(activeNodes.isEmpty())) {
+            Node curNode = activeNodes.pop();
+            if (curNode.depth > maxNode.depth)
+                maxNode = curNode;
+            for (Node e : curNode.getChildren().values()) {
+                if (e.getAnnotation().size() == count) {
+                    activeNodes.push(e);
+                }
+            }
+        }
+        return maxNode;
+    }
 
+    public SymbolSeq findLCSS() {
+        Node found = auxFindLCSS();
+        if (found.equals(root))
+            return new ArraySS();
+        else if (found.parent.equals(root)) {
+            return ss.get(found.usedStrIndex).substring(found.start, found.end + 1);
+        }
+        SymbolSeq substr = new ArraySS();
+        while (!(found.parent.equals(root))) {
+            substr = substr.concat(ss.get(found.usedStrIndex).substring(found.start, found.end + 1));
+            found = found.parent;
+        }
+        return substr;
+    }
 
 
     public void build() {
@@ -85,8 +120,14 @@ public class GeneralizedSuffixTree {
     }
 
     protected void addLeaf(Node parent, int strInSet, int start, int end, int depth) {
+//        System.out.println("---" + ss.get(strInSet).length());
+//        System.out.println("---" + start);
+        if (ss.get(strInSet).charAt(start).isEndmarker()) {
+            parent.addFinalOf(strInSet);
+        }
         Node child = new Node(parent, strInSet, start, end, depth);
         parent.putChild(ss.get(strInSet).charAt(child.start), child);
+        parent.addToAnnotation(strInSet);
     }
 
     /* Here child node must be child of parent node */
@@ -107,7 +148,9 @@ public class GeneralizedSuffixTree {
 
     protected Node addSuffix(Node head, int start) {
         Node newHead = slowScan(fastScan(head), start);
-        addLeaf(newHead, strInSet,start + newHead.depth, ss.get(strInSet).length()-1, ss.get(strInSet).length() - start);
+        addLeaf(newHead, strInSet,
+                start + newHead.depth, ss.get(strInSet).length() - 1,
+                ss.get(strInSet).length() - start);
         return newHead;
     }
 
@@ -154,6 +197,8 @@ public class GeneralizedSuffixTree {
 //        System.out.println("---" + node);
 //        System.out.println("---" + s.charAt(curPos).toCharacter());
 //        System.out.println("---" + start);
+//        print();
+//        System.out.println(curNode);
         while (curNode.hasChild(s.charAt(curPos))) {
 //            System.out.println("curnode " + curNode);
             Node child = curNode.getChild(s.charAt(curPos));
@@ -164,6 +209,7 @@ public class GeneralizedSuffixTree {
                 curPos++;
                 edgePos++;
             }
+//            System.out.println(edgePos);
             if (edgePos == child.length) {
                 curNode = child;
             }
@@ -231,7 +277,7 @@ public class GeneralizedSuffixTree {
             return;
         }
 
-        System.out.printf("%s%s%c [%d,%d] str=%d depth=%d len=%d%n",
+        System.out.printf("%s%s%c [%d,%d] str=%d depth=%d len=%d" + " " + node.getAnnotation() + "\n",
                 prefix, connector, edgeChar, node.start, node.end, node.usedStrIndex, node.depth, node.length);
 
         String childPrefix = prefix + (isLast ? "    " : "│   ");

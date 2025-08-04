@@ -6,4 +6,7 @@ public interface SymbolSeq {
     int length();
     boolean isEmpty();
     SymbolSeq substring(int start);
+    SymbolSeq substring(int start, int end);
+    void addSymbol(Symbol symbol);
+    SymbolSeq concat(SymbolSeq second);
 }

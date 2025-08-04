@@ -17,6 +17,7 @@ public class Node {
 
     /* can be empty */
     private @NotNull Set<Integer> annotation;
+    private @NotNull Set<Integer> finalOf;
     public final int usedStrIndex;
 
     public Node(@Nullable Node parent, int start, int end, int depth) {
@@ -28,6 +29,7 @@ public class Node {
         this.length = end - start + 1;
         this.usedStrIndex = -1;
         annotation = new HashSet<>();
+        finalOf = new HashSet<>();
     }
 
     public Node(@Nullable Node parent, int usedStrIndex, int start, int end, int depth) {
@@ -40,6 +42,7 @@ public class Node {
         this.usedStrIndex = usedStrIndex;
         annotation = new HashSet<>();
         annotation.add(usedStrIndex);
+        finalOf = new HashSet<>();
     }
 
 
@@ -53,6 +56,10 @@ public class Node {
 
     public Node getChild(Symbol c) {
         return children.get(c);
+    }
+
+    public Map<Symbol,Node> getChildren() {
+        return children;
     }
 
     public void putChild(Symbol c, Node child) {
@@ -83,6 +90,17 @@ public class Node {
     public boolean containsAnnotation(int index) {
         return annotation.contains(index);
     }
+
+    public Set<Integer> getAnnotation() {
+        return  annotation;
+    }
+
+    public void addFinalOf(int index) {
+        finalOf.add(index);
+    }
+     public Set<Integer> getFinals() {
+        return finalOf;
+     }
 
 //    public boolean equals(Object other) {
 //        if (!(other instanceof Node that))
