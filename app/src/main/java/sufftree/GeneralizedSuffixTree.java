@@ -1,14 +1,15 @@
 package sufftree;
 
 import java.util.*;
+import factor.Factor;
 
 public class GeneralizedSuffixTree {
     Node root;
-    List<String> ss;
+    List<Factor> ss;
     private int strInSet;
-    private String s;
+    private Factor s;
 
-    public GeneralizedSuffixTree(List<String> ss) {
+    public GeneralizedSuffixTree(List<Factor> ss) {
         this.ss = ss;
         build();
     }
@@ -19,7 +20,7 @@ public class GeneralizedSuffixTree {
     }
 
 
-    private boolean containsSuffAux(String suff, int index, int ann, Node node) {
+    private boolean containsSuffAux(Factor suff, int index, int ann, Node node) {
         if (index == suff.length() && node.isLeaf() && node.containsAnnotation(ann)) {
             return true;
         }
@@ -49,7 +50,7 @@ public class GeneralizedSuffixTree {
      * Do not use without endmarker in input string.
      * */
 
-    public boolean containsSuffix(String suff, int ann) {
+    public boolean containsSuffix(Factor suff, int ann) {
         if (suff.isEmpty()) {
             return true;
         }
@@ -74,14 +75,14 @@ public class GeneralizedSuffixTree {
         return maxNode;
     }
 
-    public String findLCSS() {
+    public Factor findLCSS() {
         Node found = auxFindLCSS();
         if (found.equals(root))
-            return "";
+            return new Factor("");
         else if (found.parent.equals(root)) {
             return ss.get(found.usedStrIndex).substring(found.start, found.end + 1);
         }
-        String substr = "";
+        Factor substr = new Factor("");
         while (!(found.equals(root))) {
             System.out.println(found);
             substr = ss.get(found.usedStrIndex).substring(found.start, found.end + 1).concat(substr);
@@ -101,7 +102,7 @@ public class GeneralizedSuffixTree {
         for (int countStr = 0; countStr < ss.size(); countStr++) {
             strInSet = countStr;
             s = ss.get(strInSet);
-            String str = ss.get(strInSet);
+            Factor str = ss.get(strInSet);
             root.addToAnnotation(countStr);
             int n = str.length();
             for (int i = 0; i < n; i++) {

@@ -1,5 +1,6 @@
 package main;
 
+import factor.Factor;
 import sufftree.GeneralizedSuffixTree;
 import symbol.ArraySS;
 import symbol.SymbolSeq;
@@ -10,11 +11,11 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
 
-        String a = "sabsa1";
-        String b = "csabcab2";
-        String c = "dsabcabd3";
+        Factor a = new Factor("sabbsa1");
+        Factor b = new Factor("csabcabb2");
+        Factor c = new Factor("daabcabbd3");
 
-        ArrayList<String> input = new ArrayList<>();
+        ArrayList<Factor> input = new ArrayList<>();
         input.add(a);
         input.add(b);
         input.add(c);
@@ -22,13 +23,13 @@ public class Main {
 //        st.build();
         st.print();
 
-        String s = "ab2";
-        SymbolSeq sufss = new ArraySS(s);
-        sufss.addSymbol(new UnicodeSymbol(-2));
-        boolean contains = st.containsSuffix(s, 1);
-        System.out.println(contains);
+//        String s = "ab2";
+//        SymbolSeq sufss = new ArraySS(s);
+//        sufss.addSymbol(new UnicodeSymbol(-2));
+//        boolean contains = st.containsSuffix(s, 1);
+//        System.out.println(contains);
 
-        String common = st.findLCSS();
+        Factor common = st.findLCSS();
         System.out.println(common);
         System.out.println("=====");
 

@@ -2,10 +2,9 @@ package sufftree;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import symbol.Symbol;
-import symbol.SymbolSeq;
-
 import java.util.*;
+
+import factor.Factor;
 
 public class Node {
     public @Nullable Node parent;
