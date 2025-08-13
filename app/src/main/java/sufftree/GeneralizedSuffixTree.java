@@ -1,18 +1,14 @@
 package sufftree;
 
-import symbol.ArraySS;
-import symbol.Symbol;
-import symbol.SymbolSeq;
-
 import java.util.*;
 
 public class GeneralizedSuffixTree {
     Node root;
-    List<SymbolSeq> ss;
+    List<String> ss;
     private int strInSet;
-    private SymbolSeq s;
+    private String s;
 
-    public GeneralizedSuffixTree(List<SymbolSeq> ss) {
+    public GeneralizedSuffixTree(List<String> ss) {
         this.ss = ss;
         build();
     }
@@ -23,7 +19,7 @@ public class GeneralizedSuffixTree {
     }
 
 
-    private boolean containsSuffAux(SymbolSeq suff, int index, int ann, Node node) {
+    private boolean containsSuffAux(String suff, int index, int ann, Node node) {
         if (index == suff.length() && node.isLeaf() && node.containsAnnotation(ann)) {
             return true;
         }
@@ -34,7 +30,7 @@ public class GeneralizedSuffixTree {
         int currIndex = index;
         int sourceIndex = next.start;
         while (sourceIndex <= next.end && currIndex < suff.length()) {
-            if (!(ss.get(next.usedStrIndex).charAt(sourceIndex).equals(suff.charAt(currIndex)))) {
+            if (!(ss.get(next.usedStrIndex).charAt(sourceIndex) == suff.charAt(currIndex))) {
                 return false;
             }
             currIndex++;
@@ -53,7 +49,7 @@ public class GeneralizedSuffixTree {
      * Do not use without endmarker in input string.
      * */
 
-    public boolean containsSuffix(SymbolSeq suff, int ann) {
+    public boolean containsSuffix(String suff, int ann) {
         if (suff.isEmpty()) {
             return true;
         }
@@ -78,16 +74,17 @@ public class GeneralizedSuffixTree {
         return maxNode;
     }
 
-    public SymbolSeq findLCSS() {
+    public String findLCSS() {
         Node found = auxFindLCSS();
         if (found.equals(root))
-            return new ArraySS();
+            return "";
         else if (found.parent.equals(root)) {
             return ss.get(found.usedStrIndex).substring(found.start, found.end + 1);
         }
-        SymbolSeq substr = new ArraySS();
-        while (!(found.parent.equals(root))) {
-            substr = substr.concat(ss.get(found.usedStrIndex).substring(found.start, found.end + 1));
+        String substr = "";
+        while (!(found.equals(root))) {
+            System.out.println(found);
+            substr = ss.get(found.usedStrIndex).substring(found.start, found.end + 1).concat(substr);
             found = found.parent;
         }
         return substr;
@@ -104,7 +101,7 @@ public class GeneralizedSuffixTree {
         for (int countStr = 0; countStr < ss.size(); countStr++) {
             strInSet = countStr;
             s = ss.get(strInSet);
-            SymbolSeq str = ss.get(strInSet);
+            String str = ss.get(strInSet);
             root.addToAnnotation(countStr);
             int n = str.length();
             for (int i = 0; i < n; i++) {
@@ -122,7 +119,7 @@ public class GeneralizedSuffixTree {
     protected void addLeaf(Node parent, int strInSet, int start, int end, int depth) {
 //        System.out.println("---" + ss.get(strInSet).length());
 //        System.out.println("---" + start);
-        if (ss.get(strInSet).charAt(start).isEndmarker()) {
+        if (Character.isDigit(ss.get(strInSet).charAt(start))) {
             parent.addFinalOf(strInSet);
         }
         Node child = new Node(parent, strInSet, start, end, depth);
@@ -205,7 +202,7 @@ public class GeneralizedSuffixTree {
             int edgePos = 0;
 
             while (curPos < s.length() && edgePos < child.length &&
-                    s.charAt(curPos).equals(ss.get(child.usedStrIndex).charAt(child.start + edgePos))) {
+                    s.charAt(curPos) == ss.get(child.usedStrIndex).charAt(child.start + edgePos)) {
                 curPos++;
                 edgePos++;
             }
@@ -253,13 +250,13 @@ public class GeneralizedSuffixTree {
         int total = node.countChildren();
         int idx = 0;
 
-        List<Symbol> keys = new ArrayList<>(node.getTransitions());
+        List<Character> keys = new ArrayList<>(node.getTransitions());
 //        Collections.sort(keys);
 
-        for (Symbol ch : keys) {
+        for (Character ch : keys) {
             Node child = node.getChild(ch);
             boolean lastChild = (++idx == total);
-            printTreeWithEdge(child, childPrefix, lastChild, ch.toCharacter(), visited);
+            printTreeWithEdge(child, childPrefix, lastChild, ch, visited);
         }
     }
 
@@ -282,11 +279,11 @@ public class GeneralizedSuffixTree {
 
         String childPrefix = prefix + (isLast ? "    " : "│   ");
 
-        List<Symbol> keys = new ArrayList<>(node.getTransitions());
+        List<Character> keys = new ArrayList<>(node.getTransitions());
 //        Collections.sort(keys);
         for (int i = 0; i < keys.size(); i++) {
-            Symbol k = keys.get(i);
-            printTreeWithEdge(node.getChild(k), childPrefix, i == keys.size() - 1, k.toCharacter(), visited);
+            Character k = keys.get(i);
+            printTreeWithEdge(node.getChild(k), childPrefix, i == keys.size() - 1, k, visited);
         }
     }
 

@@ -13,7 +13,7 @@ public class Node {
     public int length;
     public int depth;
     public @Nullable Node suf;
-    private @NotNull HashMap<Symbol, Node> children;
+    private @NotNull HashMap<Character, Node> children;
 
     /* can be empty */
     private @NotNull Set<Integer> annotation;
@@ -50,19 +50,19 @@ public class Node {
         length = end - start + 1;
     }
 
-    public boolean hasChild(Symbol c) {
+    public boolean hasChild(Character c) {
         return children.containsKey(c);
     }
 
-    public Node getChild(Symbol c) {
+    public Node getChild(Character c) {
         return children.get(c);
     }
 
-    public Map<Symbol,Node> getChildren() {
+    public Map<Character,Node> getChildren() {
         return children;
     }
 
-    public void putChild(Symbol c, Node child) {
+    public void putChild(Character c, Node child) {
         children.put(c, child);
     }
 
@@ -74,7 +74,7 @@ public class Node {
         return children.size();
     }
 
-    public Set<Symbol> getTransitions() {
+    public Set<Character> getTransitions() {
         return children.keySet();
     }
 

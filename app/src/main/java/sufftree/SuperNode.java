@@ -17,12 +17,12 @@ public class SuperNode extends Node {
     }
 
     @Override
-    public boolean hasChild(Symbol c) {
+    public boolean hasChild(Character c) {
         return true;
     }
 
     @Override
-    public Node getChild(Symbol c) {
+    public Node getChild(Character c) {
         return child;
     }
 }
