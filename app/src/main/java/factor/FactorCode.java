@@ -18,7 +18,7 @@ public class FactorCode {
   public FactorCode(@NotNull String str) {
     factors = new HashSet<>();
     if (!(str.isEmpty()))
-	factors.add(new Factor(str));
+	  factors.add(new Factor(str));
   }
 
   public FactorCode(@NotNull Factor f) {
