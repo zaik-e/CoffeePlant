@@ -5,11 +5,11 @@ import factor.Factor;
 
 public class GeneralizedSuffixTree {
     Node root;
-    List<Factor> ss;
+    ArrayList<Factor> ss;
     private int strInSet;
     private Factor s;
 
-    public GeneralizedSuffixTree(List<Factor> ss) {
+    public GeneralizedSuffixTree(ArrayList<Factor> ss) {
         this.ss = ss;
         build();
     }
@@ -124,9 +124,15 @@ public class GeneralizedSuffixTree {
         }
     }
 
-    public void addFactor(Factor newFactor) {
-        ss.add(newFactor);
-        strInSet = ss.size() - 1;
+    public void simpleAddString(Factor newFactor) {
+        simpleAddString(newFactor, ss.size());
+    }
+
+    public void simpleAddString(Factor newFactor, int index) {
+        ss.add(index, newFactor);
+//        ss.add(newFactor);
+//        strInSet = ss.size() - 1;
+        strInSet = index;
         s = ss.get(strInSet);
         root.addToAnnotation(strInSet);
         int n = newFactor.length();
@@ -134,6 +140,40 @@ public class GeneralizedSuffixTree {
         for (int i = 0; i < n; i++) {
             head = addSuffix(head, i);
         }
+    }
+
+    /*return false if factor in tree as substing*/
+    public int addFactor(Factor factor) {
+        Node deepest = matchWord(factor, 0, root);
+        if (deepest.depth == factor.length())
+            return -1;
+        if (deepest.isLeaf()) {
+            simpleAddString(factor, deepest.usedStrIndex);
+            return deepest.usedStrIndex;
+        }
+        if (deepest.hasChild(factor.charAt(deepest.depth))) {
+            Node node = deepest.getChild(factor.charAt(deepest.depth));
+            int edgeIndex = node.start;
+            Factor nodeFactor = ss.get(node.usedStrIndex);
+            int factorIndex = deepest.depth;
+            while ((edgeIndex <= node.end) && (factorIndex < factor.length())) {
+                if (factor.charAt(factorIndex) == nodeFactor.charAt(edgeIndex)) {
+                    edgeIndex++;
+                    factorIndex++;
+                } else
+                    break;
+
+            }
+
+            if (factorIndex == factor.length())
+                return -1;
+            else {
+                simpleAddString(factor);
+                return ss.size() - 1;
+            }
+        }
+
+        return -1;
 
     }
 

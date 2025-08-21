@@ -1,28 +1,30 @@
 package factor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import sufftree.GeneralizedSuffixTree;
 
 
 public class FactorCode {
 
-  @NotNull Set<Factor> factors;
+//  @NotNull Set<Factor> factors;
+  @NotNull ArrayList<Factor> factors;
+  @Nullable GeneralizedSuffixTree tree = null;
 
-  public FactorCode(@NotNull Set<Factor> ideals) {
+  public FactorCode(@NotNull ArrayList<Factor> ideals) {
     this.factors = ideals;
   }
 
   public FactorCode(@NotNull String str) {
-    factors = new HashSet<>();
+    factors = new ArrayList<>();
     if (!(str.isEmpty()))
 	  factors.add(new Factor(str));
   }
 
   public FactorCode(@NotNull Factor f) {
-    Set<Factor> iset = new HashSet<>();
+    ArrayList<Factor> iset = new ArrayList<>();
     if (!(f.isEmpty()))
 	    iset.add(f);
     this.factors = iset;
@@ -33,7 +35,7 @@ public class FactorCode {
   }
 
   public static @NotNull FactorCode getEmpty() {
-    return new FactorCode(new HashSet<>());
+    return new FactorCode(new ArrayList<>());
   }
 
   public int size() {
@@ -49,27 +51,37 @@ public class FactorCode {
   }
 
   public @NotNull FactorCode copy() {
-    return new FactorCode(new HashSet<>(this.factors));
+    return new FactorCode(new ArrayList<>(this.factors));
   }
 
-  public @NotNull Set<Factor> getFactors() {
+  public @NotNull List<Factor> getFactors() {
     return this.factors;
   }
 
-  public static @NotNull Set<Factor> addFactorToSet(@NotNull Set<Factor> factors, @NotNull Factor f) {
-    throw new UnsupportedOperationException();
+  /*check with empty*/
+  public void addFactor(@NotNull Factor f) {
+    if (tree == null) {
+      GeneralizedSuffixTree currTree = new GeneralizedSuffixTree(factors);
+    }
+    int indexAdded = tree.addFactor(f);
+    if (indexAdded != -1)
+      factors.add(indexAdded, f);
   }
 
-  public @NotNull FactorCode addFactor(@NotNull Factor f) {
-    return new FactorCode(addFactorToSet(this.factors, f));
-  }
-
-  public @NotNull FactorCode addAllFactors(@NotNull FactorCode that) {
-    throw new UnsupportedOperationException();
+  public void addAllFactors(@NotNull FactorCode that) {
+    for (Factor thatFactor : that.factors) {
+      this.addFactor(thatFactor);
+    }
   }
 
   public static @NotNull FactorCode normalizeCode(@NotNull FactorCode that) {
-    throw new UnsupportedOperationException();
+    List<Factor> thatFactors = that.factors;
+    Collections.sort(thatFactors);
+    FactorCode resultCode = FactorCode.getEmpty();
+    for (int index = thatFactors.size() - 1; index >= 0; index--) {
+      resultCode.addFactor(thatFactors.get(index));
+    }
+    return resultCode;
   }
 
   public @NotNull FactorCode reverse() {

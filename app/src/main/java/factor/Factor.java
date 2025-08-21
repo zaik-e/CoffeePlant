@@ -4,7 +4,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 
-public class Factor {
+public class Factor implements Comparable<Factor> {
 
   public final @NotNull String value;
 
@@ -90,5 +90,10 @@ public class Factor {
   @Override
   public @NotNull String toString() {
     return value;
+  }
+
+  @Override
+  public int compareTo(@NotNull Factor o) {
+    return Integer.compare(this.length() - o.length(), 0);
   }
 }
