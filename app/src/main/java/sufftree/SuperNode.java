@@ -2,7 +2,6 @@ package sufftree;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import symbol.Symbol;
 
 public class SuperNode extends Node {
     Node child;

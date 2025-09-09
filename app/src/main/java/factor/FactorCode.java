@@ -3,35 +3,42 @@ package factor;
 import java.util.*;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import sufftree.GeneralizedSuffixTree;
 
 
 public class FactorCode {
+  private @NotNull GeneralizedSuffixTree tree = new GeneralizedSuffixTree();
 
-//  @NotNull Set<Factor> factors;
-  @NotNull ArrayList<Factor> factors;
-  @Nullable GeneralizedSuffixTree tree = null;
+  public FactorCode(@NotNull Set<Factor> factors) {
+    this.tree = new GeneralizedSuffixTree(new ArrayList<>(factors));
+  }
 
-  public FactorCode(@NotNull ArrayList<Factor> ideals) {
-    this.factors = ideals;
+  public FactorCode(@NotNull ArrayList<Factor> factors) {
+    this.tree = new GeneralizedSuffixTree(factors);
   }
 
   public FactorCode(@NotNull String str) {
-    factors = new ArrayList<>();
-    if (!(str.isEmpty()))
-	  factors.add(new Factor(str));
+    ArrayList<Factor> factors = new ArrayList<>();
+    factors.add(new Factor(str));
+    this.tree = new GeneralizedSuffixTree(factors);
   }
 
   public FactorCode(@NotNull Factor f) {
-    ArrayList<Factor> iset = new ArrayList<>();
-    if (!(f.isEmpty()))
-	    iset.add(f);
-    this.factors = iset;
+    ArrayList<Factor> factors = new ArrayList<>();
+    factors.add(f);
+    this.tree = new GeneralizedSuffixTree(factors);
+  }
+
+  public FactorCode(@NotNull GeneralizedSuffixTree tree) {
+    this.tree = tree;
+  }
+
+  private void setTree(@NotNull GeneralizedSuffixTree st) {
+    this.tree = st;
   }
 
   public boolean isEmpty() {
-    return factors.isEmpty();
+    return tree.isEmpty();
   }
 
   public static @NotNull FactorCode getEmpty() {
@@ -39,49 +46,50 @@ public class FactorCode {
   }
 
   public int size() {
-    return factors.size();
+    return tree.size();
   }
 
   public int commonLength() {
     int res = 0;
-    for (Factor f : factors) {
+    for (Factor f : tree.getFactors()) {
       res += f.length();
     }
     return res;
   }
 
   public @NotNull FactorCode copy() {
-    return new FactorCode(new ArrayList<>(this.factors));
+    return new FactorCode(this.tree.clearCopy());
   }
 
   public @NotNull List<Factor> getFactors() {
-    return this.factors;
+    return this.tree.getFactors();
   }
 
-  /*check with empty*/
-  public void addFactor(@NotNull Factor f) {
-    if (tree == null) {
-      GeneralizedSuffixTree currTree = new GeneralizedSuffixTree(factors);
-    }
-    int indexAdded = tree.addFactor(f);
-    if (indexAdded != -1)
-      factors.add(indexAdded, f);
+  private void addFactor(@NotNull Factor f) {
+    tree.addFactor(f);
   }
 
   public void addAllFactors(@NotNull FactorCode that) {
-    for (Factor thatFactor : that.factors) {
-      this.addFactor(thatFactor);
+    for (Factor f : that.getFactors()) {
+      tree.addFactor(f);
     }
   }
 
   public static @NotNull FactorCode normalizeCode(@NotNull FactorCode that) {
-    List<Factor> thatFactors = that.factors;
-    Collections.sort(thatFactors);
     FactorCode resultCode = FactorCode.getEmpty();
-    for (int index = thatFactors.size() - 1; index >= 0; index--) {
-      resultCode.addFactor(thatFactors.get(index));
+    for (Factor f : that.getFactors()) {
+      resultCode.addFactor(f);
     }
     return resultCode;
+  }
+
+  public @NotNull FactorCode joinCode(@NotNull FactorCode that) {
+    ArrayList<Factor> mergeFactors = new ArrayList<>(this.getFactors());
+    int divider = mergeFactors.size() - 1;
+    mergeFactors.addAll(that.getFactors());
+    GeneralizedSuffixTree commonTree = new GeneralizedSuffixTree(mergeFactors);
+    ArrayList<Factor> lcss = commonTree.LCSSoddeven(divider);
+    return new FactorCode(lcss);
   }
 
   public @NotNull FactorCode reverse() {
@@ -95,14 +103,16 @@ public class FactorCode {
       return true;
     }
     if (obj instanceof FactorCode that) {
-      return (this.factors.equals(that.factors));
+      Set<Factor> thisSet = new HashSet<>(this.getFactors());
+      Set<Factor> thatSet = new HashSet<>(that.getFactors());
+      return thisSet.equals(thatSet);
     }
     return false;                                                      
   }
 
   @Override
   public int hashCode() {
-    return factors.hashCode();
+    return getFactors().hashCode();
   }
 
 }

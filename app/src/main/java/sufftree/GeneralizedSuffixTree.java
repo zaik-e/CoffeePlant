@@ -1,24 +1,48 @@
 package sufftree;
 
+import java.net.Inet4Address;
 import java.util.*;
 import factor.Factor;
+import org.checkerframework.checker.units.qual.A;
 
+/*
+* special class for storing factors in tree with automatically normalization of factorcode
+* */
 public class GeneralizedSuffixTree {
-    Node root;
-    ArrayList<Factor> ss;
+    protected Node root;
+    private ArrayList<Factor> factors;
     private int strInSet;
-    private Factor s;
+    private Factor currentFactor;
+
+    public Set<Integer> unusedIndexes = new HashSet<>();
 
     public GeneralizedSuffixTree(ArrayList<Factor> ss) {
-        this.ss = ss;
-        build();
+        this.factors = new ArrayList<>();
+        build(ss);
     }
 
-    protected GeneralizedSuffixTree() {
-        this.ss = new ArrayList<>();
-        build();
+    public GeneralizedSuffixTree() {
+        this.factors = new ArrayList<>();
+        build(factors);
     }
 
+    public boolean isEmpty() {
+        return root.getChildren().isEmpty();
+    }
+
+    public int size() {
+        return factors.size() - unusedIndexes.size();
+    }
+
+    public ArrayList<Factor> getFactors() {
+        ArrayList<Factor> clearFactors = new ArrayList<>();
+        for (int i = 0; i < factors.size(); i++) {
+            if (unusedIndexes.contains(i))
+                continue;
+            clearFactors.add(factors.get(i));
+        }
+        return clearFactors;
+    }
 
     private Node matchWord(Factor infix, int index, Node node) {
         if (index == infix.length()) {
@@ -31,7 +55,7 @@ public class GeneralizedSuffixTree {
         int currIndex = index;
         int sourceIndex = next.start;
         while (sourceIndex <= next.end && currIndex < infix.length()) {
-            if (!(ss.get(next.usedStrIndex).charAt(sourceIndex) == infix.charAt(currIndex))) {
+            if (!(factors.get(next.usedStrIndex).charAt(sourceIndex) == infix.charAt(currIndex))) {
                 return node;
             }
             currIndex++;
@@ -60,7 +84,7 @@ public class GeneralizedSuffixTree {
         int currIndex = index;
         int sourceIndex = next.start;
         while (sourceIndex <= next.end && currIndex < infix.length()) {
-            if (!(ss.get(next.usedStrIndex).charAt(sourceIndex) == infix.charAt(currIndex))) {
+            if (!(factors.get(next.usedStrIndex).charAt(sourceIndex) == infix.charAt(currIndex))) {
                 return false;
             }
             currIndex++;
@@ -70,120 +94,68 @@ public class GeneralizedSuffixTree {
         return currIndex == infix.length();
     }
 
-    private Node auxFindLCSS() {
-        int count = ss.size();
-        Stack<Node> activeNodes = new Stack<>();
-        activeNodes.add(root);
-        Node maxNode = root;
-        while (!(activeNodes.isEmpty())) {
-            Node curNode = activeNodes.pop();
-            if (curNode.depth > maxNode.depth)
-                maxNode = curNode;
-            for (Node e : curNode.getChildren().values()) {
-                if (e.getAnnotation().size() == count) {
-                    activeNodes.push(e);
+    public ArrayList<Factor> LCSSoddeven(int divider) {
+        Stack<Node> stack = new Stack<>();
+        stack.push(root);
+
+        ArrayList<Factor> result = new ArrayList<>();
+        while (!stack.isEmpty()) {
+            Node currNode = stack.pop();
+            boolean hasDeeper = false;
+            for (Node child : currNode.getChildren().values()) {
+                if (child.hasBoth(divider)) {
+                    stack.push(child);
+                    hasDeeper = true;
                 }
             }
+            if (!hasDeeper)
+                result.add(factors.get(currNode.usedStrIndex).substring(currNode.end - currNode.depth + 1,
+                        currNode.end + 1));
         }
-        return maxNode;
-    }
-
-    public Factor findLCSS() {
-        Node found = auxFindLCSS();
-        if (found.equals(root))
-            return new Factor("");
-        else if (found.parent.equals(root)) {
-            return ss.get(found.usedStrIndex).substring(found.start, found.end + 1);
-        }
-        Factor substr = new Factor("");
-        while (!(found.equals(root))) {
-            System.out.println(found);
-            substr = ss.get(found.usedStrIndex).substring(found.start, found.end + 1).concat(substr);
-            found = found.parent;
-        }
-        return substr;
+        return result;
     }
 
 
-    public void build() {
+    public void build(ArrayList<Factor> factors) {
         SuperNode superRoot = new SuperNode();
         this.root = new Node(superRoot, 0, -1, 0);
         root.suf = superRoot;
         superRoot.setChild(root);
 
-        Node head = root;
-        for (int countStr = 0; countStr < ss.size(); countStr++) {
-            strInSet = countStr;
-            s = ss.get(strInSet);
-            Factor str = ss.get(strInSet);
-            root.addToAnnotation(countStr);
-            int n = str.length();
-            for (int i = 0; i < n; i++) {
-                head = addSuffix(head, i);
-            }
+        for (int countStr = 0; countStr < factors.size(); countStr++) {
+            addFactor(factors.get(countStr));
         }
     }
 
-    public void simpleAddString(Factor newFactor) {
-        simpleAddString(newFactor, ss.size());
-    }
+    public void addFactor(Factor factor) {
+        if (containsSubstr(factor))
+            return;
 
-    public void simpleAddString(Factor newFactor, int index) {
-        ss.add(index, newFactor);
-//        ss.add(newFactor);
-//        strInSet = ss.size() - 1;
-        strInSet = index;
-        s = ss.get(strInSet);
+        strInSet = factors.size();
+        factors.add(factor);
+        currentFactor = factor;
+
         root.addToAnnotation(strInSet);
-        int n = newFactor.length();
+        int n = currentFactor.length();
         Node head = root;
+
         for (int i = 0; i < n; i++) {
             head = addSuffix(head, i);
         }
-    }
-
-    /*return false if factor in tree as substing*/
-    public int addFactor(Factor factor) {
-        Node deepest = matchWord(factor, 0, root);
-        if (deepest.depth == factor.length())
-            return -1;
-        if (deepest.isLeaf()) {
-            simpleAddString(factor, deepest.usedStrIndex);
-            return deepest.usedStrIndex;
-        }
-        if (deepest.hasChild(factor.charAt(deepest.depth))) {
-            Node node = deepest.getChild(factor.charAt(deepest.depth));
-            int edgeIndex = node.start;
-            Factor nodeFactor = ss.get(node.usedStrIndex);
-            int factorIndex = deepest.depth;
-            while ((edgeIndex <= node.end) && (factorIndex < factor.length())) {
-                if (factor.charAt(factorIndex) == nodeFactor.charAt(edgeIndex)) {
-                    edgeIndex++;
-                    factorIndex++;
-                } else
-                    break;
-
-            }
-
-            if (factorIndex == factor.length())
-                return -1;
-            else {
-                simpleAddString(factor);
-                return ss.size() - 1;
-            }
-        }
-
-        return -1;
-
+        if (!head.equals(root))
+            head.suf = root;
     }
 
     protected void addLeaf(Node parent, int strInSet, int start, int end, int depth) {
-        if (Character.isDigit(ss.get(strInSet).charAt(start))) {
+        if (start > end) {
             parent.addFinalOf(strInSet);
+            parent.addToAnnotation(strInSet);
+            return;
         }
         Node child = new Node(parent, strInSet, start, end, depth);
-        parent.putChild(ss.get(strInSet).charAt(child.start), child);
+        parent.putChild(currentFactor.charAt(child.start), child);
         parent.addToAnnotation(strInSet);
+        child.addFinalOf(strInSet);
     }
 
     /* Here child node must be child of parent node */
@@ -191,20 +163,77 @@ public class GeneralizedSuffixTree {
                               int strInSet, int start, int end, int depth) {
         Node newInternal = new Node(parent, strInSet, start, end, depth);
         child.start = child.start + newInternal.length;
-        newInternal.putChild(ss.get(child.usedStrIndex).charAt(child.start), child);
+        newInternal.putChild(factors.get(child.usedStrIndex).charAt(child.start), child);
         newInternal.copyAnnotation(child);
-        parent.putChild(ss.get(newInternal.usedStrIndex).charAt(newInternal.start), newInternal);
+        parent.putChild(factors.get(newInternal.usedStrIndex).charAt(newInternal.start), newInternal);
         child.parent = newInternal;
         child.updateLength();
         return newInternal;
     }
 
     protected Node addSuffix(Node head, int start) {
-        Node newHead = slowScan(fastScan(head), start);
+//        Node fastHead = fastScanWithReplacement(head, start);
+        Node newHead = slowScan(fastScanWithReplacement(head, start), start);
         addLeaf(newHead, strInSet,
-                start + newHead.depth, ss.get(strInSet).length() - 1,
-                ss.get(strInSet).length() - start);
+                start + newHead.depth, currentFactor.length() - 1,
+                currentFactor.length() - start);
         return newHead;
+    }
+
+    private void replaceEdge(int newStrIndex, int newStart, Node node) {
+        if (node.equals(root) || node.equals(root.parent))
+            return;
+        if (node.usedStrIndex == newStrIndex)
+            return;
+
+        for (int index : node.getFinals()) {
+            if (factors.get(index).length() == node.depth)
+                unusedIndexes.add(index);
+        }
+        node.start = newStart;
+        node.end = node.start + node.length - 1;
+        node.usedStrIndex = newStrIndex;
+    }
+
+    protected Node fastScanWithReplacement(Node head, int start) {
+        if (head.equals(root)) {
+            return head;
+        }
+        if (head.suf != null) {
+            return head.suf;
+        }
+        int skipped = head.length;
+        int curPos = head.start;
+
+        if (head.parent.equals(root)) {
+            skipped--;
+            curPos++;
+        }
+
+        Node curNode = head.parent.suf;
+        replaceEdge(strInSet, start + curNode.depth - curNode.length, curNode);
+
+        Node nextNode = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
+
+        while (skipped >= nextNode.length) {
+            skipped -= nextNode.length;
+            curPos += nextNode.length;
+            curNode = nextNode;
+            curNode.addToAnnotation(strInSet);
+            replaceEdge(strInSet, start + curNode.depth - curNode.length, curNode);
+            if (skipped == 0)
+                break;
+            nextNode = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
+        }
+
+        if (skipped > 0) {
+            Node next = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
+            curNode = divideEdge(curNode, next, next.usedStrIndex,
+                    next.start, next.start + skipped - 1, curNode.depth + skipped);
+        }
+        head.suf = curNode;
+
+        return curNode;
     }
 
     protected Node fastScan(Node head) {
@@ -224,17 +253,19 @@ public class GeneralizedSuffixTree {
 
         Node curNode = head.parent.suf;
 
-        Node nextNode = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
+        Node nextNode = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
         while (skipped >= nextNode.length) {
             skipped -= nextNode.length;
             curPos += nextNode.length;
             curNode = nextNode;
             curNode.addToAnnotation(strInSet);
-            nextNode = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
+            if (skipped == 0)
+                break;
+            nextNode = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
         }
 
         if (skipped > 0) {
-            Node next = curNode.getChild(ss.get(head.usedStrIndex).charAt(curPos));
+            Node next = curNode.getChild(factors.get(head.usedStrIndex).charAt(curPos));
             curNode = divideEdge(curNode, next, next.usedStrIndex,
                     next.start, next.start + skipped - 1, curNode.depth + skipped);
         }
@@ -246,99 +277,48 @@ public class GeneralizedSuffixTree {
     protected Node slowScan(Node node, int start) {
         Node curNode = node;
         curNode.addToAnnotation(strInSet);
+        replaceEdge(strInSet, start + curNode.depth - curNode.length, curNode);
         int curPos = start + node.depth;
-        while (curNode.hasChild(s.charAt(curPos))) {
-            Node child = curNode.getChild(s.charAt(curPos));
+
+        if (curPos >= currentFactor.length())
+            return curNode;
+
+        while (curPos < currentFactor.length() && curNode.hasChild(currentFactor.charAt(curPos))) {
+            Node child = curNode.getChild(currentFactor.charAt(curPos));
             int edgePos = 0;
 
-            while (curPos < s.length() && edgePos < child.length &&
-                    s.charAt(curPos) == ss.get(child.usedStrIndex).charAt(child.start + edgePos)) {
+            while (curPos < currentFactor.length() && edgePos < child.length &&
+                    currentFactor.charAt(curPos) == factors.get(child.usedStrIndex).charAt(child.start + edgePos)) {
                 curPos++;
                 edgePos++;
             }
+
             if (edgePos == child.length) {
                 curNode = child;
-            }
-            else {
-
+                curNode.addToAnnotation(strInSet);
+                replaceEdge(strInSet, start + curNode.depth - curNode.length, curNode);
+            } else {
                 curNode = divideEdge(curNode, child, child.usedStrIndex, child.start, child.start + edgePos - 1,
                         curNode.depth + edgePos);
                 break;
             }
-            curNode.addToAnnotation(strInSet);
+
         }
 
         return curNode;
     }
 
-    /*
-     Methods for printing the suffix tree
-     */
-
-    private static void printTree(Node node,
-                                  String prefix,
-                                  boolean isLast,
-                                  Set<Node> visited) {
-
-        if (node == null) return;
-
-        if (!visited.add(node)) {
-            System.out.println(prefix + (isLast ? "└── " : "├── ") + "(cycle)");
-            return;
+    public GeneralizedSuffixTree clearCopy() {
+        ArrayList<Factor> clearFactors = new ArrayList<>();
+        for (int i = 0; i < factors.size(); i++) {
+            if (unusedIndexes.contains(i))
+                continue;
+            clearFactors.add(factors.get(i));
         }
 
-        String connector = isLast ? "└── " : "├── ";
+        GeneralizedSuffixTree newTree = new GeneralizedSuffixTree(clearFactors);
 
-        System.out.printf("%s%s[%d,%d] depth=%d len=%d%n",
-                prefix, connector, node.start, node.end, node.depth, node.length);
-
-        String childPrefix = prefix + (isLast ? "    " : "│   ");
-
-        int total = node.countChildren();
-        int idx = 0;
-
-        List<Character> keys = new ArrayList<>(node.getTransitions());
-//        Collections.sort(keys);
-
-        for (Character ch : keys) {
-            Node child = node.getChild(ch);
-            boolean lastChild = (++idx == total);
-            printTreeWithEdge(child, childPrefix, lastChild, ch, visited);
-        }
-    }
-
-    private static void printTreeWithEdge(Node node,
-                                          String prefix,
-                                          boolean isLast,
-                                          char edgeChar,
-                                          Set<Node> visited) {
-        if (node == null) return;
-
-        String connector = isLast ? "└── " : "├── ";
-
-        if (!visited.add(node)) {
-            System.out.println(prefix + connector + edgeChar + " -> (cycle)");
-            return;
-        }
-
-        System.out.printf("%s%s%c [%d,%d] str=%d depth=%d len=%d" + " " + node.getAnnotation() + "\n",
-                prefix, connector, edgeChar, node.start, node.end, node.usedStrIndex, node.depth, node.length);
-
-        String childPrefix = prefix + (isLast ? "    " : "│   ");
-
-        List<Character> keys = new ArrayList<>(node.getTransitions());
-//        Collections.sort(keys);
-        for (int i = 0; i < keys.size(); i++) {
-            Character k = keys.get(i);
-            printTreeWithEdge(node.getChild(k), childPrefix, i == keys.size() - 1, k, visited);
-        }
-    }
-
-    /**
-     * Pretty printer
-     */
-    public void print() {
-        printTree(root, "", true, new HashSet<>());
+        return newTree;
     }
 
 }

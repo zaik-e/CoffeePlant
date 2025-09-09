@@ -17,7 +17,7 @@ public class Node {
     /* can be empty */
     private @NotNull Set<Integer> annotation;
     private @NotNull Set<Integer> finalOf;
-    public final int usedStrIndex;
+    public int usedStrIndex;
 
     public Node(@Nullable Node parent, int start, int end, int depth) {
         this.parent = parent;
@@ -44,6 +44,29 @@ public class Node {
         finalOf = new HashSet<>();
     }
 
+    public boolean hasMoreAnn(int divider) {
+        for (int index : annotation) {
+            if (index > divider)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasLEAnn(int divider) {
+        for (int index : annotation) {
+            if (index <= divider)
+                return true;
+        }
+        return false;
+    }
+
+    public boolean hasBoth(int divider) {
+        if (usedStrIndex > divider && hasLEAnn(divider))
+            return true;
+        if (usedStrIndex <= divider && hasMoreAnn(divider))
+            return true;
+        return false;
+    }
 
     public void updateLength() {
         length = end - start + 1;
@@ -127,6 +150,7 @@ public class Node {
             sb.append(child);
             sb.append("\n");
         }
-        return  sb.toString();
+        return sb.toString();
     }
+
 }
