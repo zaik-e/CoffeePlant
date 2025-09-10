@@ -96,4 +96,8 @@ public class Factor implements Comparable<Factor> {
   public int compareTo(@NotNull Factor o) {
     return Integer.compare(this.length() - o.length(), 0);
   }
+
+  public Factor reverse() {
+    throw new UnsupportedOperationException();
+  }
 }

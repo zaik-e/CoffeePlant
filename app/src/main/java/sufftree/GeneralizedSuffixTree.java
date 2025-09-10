@@ -3,11 +3,10 @@ package sufftree;
 import java.net.Inet4Address;
 import java.util.*;
 import factor.Factor;
-import org.checkerframework.checker.units.qual.A;
 
 /*
-* special class for storing factors in tree with automatically normalization of factorcode
-* */
+ * special class for storing factors in tree with automatically normalization of factorcode
+ * */
 public class GeneralizedSuffixTree {
     protected Node root;
     private ArrayList<Factor> factors;
@@ -16,9 +15,12 @@ public class GeneralizedSuffixTree {
 
     public Set<Integer> unusedIndexes = new HashSet<>();
 
-    public GeneralizedSuffixTree(ArrayList<Factor> ss) {
+    public GeneralizedSuffixTree(ArrayList<Factor> ss, boolean checkingNeded) {
         this.factors = new ArrayList<>();
-        build(ss);
+        if (checkingNeded)
+            build(ss);
+        else
+            buildWithoutChecking(ss);
     }
 
     public GeneralizedSuffixTree() {
@@ -108,7 +110,7 @@ public class GeneralizedSuffixTree {
                     hasDeeper = true;
                 }
             }
-            if (!hasDeeper)
+            if (!hasDeeper && !(currNode.equals(root)))
                 result.add(factors.get(currNode.usedStrIndex).substring(currNode.end - currNode.depth + 1,
                         currNode.end + 1));
         }
@@ -127,10 +129,18 @@ public class GeneralizedSuffixTree {
         }
     }
 
-    public void addFactor(Factor factor) {
-        if (containsSubstr(factor))
-            return;
+    public void buildWithoutChecking(ArrayList<Factor> factors) {
+        SuperNode superRoot = new SuperNode();
+        this.root = new Node(superRoot, 0, -1, 0);
+        root.suf = superRoot;
+        superRoot.setChild(root);
 
+        for (int countStr = 0; countStr < factors.size(); countStr++) {
+            addFactorWithoutChecking(factors.get(countStr));
+        }
+    }
+
+    public void addFactorWithoutChecking(Factor factor) {
         strInSet = factors.size();
         factors.add(factor);
         currentFactor = factor;
@@ -144,6 +154,13 @@ public class GeneralizedSuffixTree {
         }
         if (!head.equals(root))
             head.suf = root;
+    }
+
+    public void addFactor(Factor factor) {
+        if (containsSubstr(factor))
+            return;
+
+        addFactorWithoutChecking(factor);
     }
 
     protected void addLeaf(Node parent, int strInSet, int start, int end, int depth) {
@@ -316,9 +333,25 @@ public class GeneralizedSuffixTree {
             clearFactors.add(factors.get(i));
         }
 
-        GeneralizedSuffixTree newTree = new GeneralizedSuffixTree(clearFactors);
+        GeneralizedSuffixTree newTree = new GeneralizedSuffixTree(clearFactors, false);
 
         return newTree;
     }
 
+    @Override
+    public int hashCode() {
+        Set<Factor> sf = new HashSet<>(getFactors());
+        return sf.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof GeneralizedSuffixTree that))
+            return false;
+        Set<Factor> sfThis = new HashSet<>(this.getFactors());
+        Set<Factor> sfThat = new HashSet<>(that.getFactors());
+        return sfThat.equals(sfThis);
+    }
 }

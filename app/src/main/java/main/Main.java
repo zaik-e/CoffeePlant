@@ -12,13 +12,13 @@ public class Main {
 
         Factor a = new Factor("hsabbsa");
         Factor b = new Factor("abbd");
-        Factor c = new Factor("asabbdsa");
+
 
         ArrayList<Factor> input = new ArrayList<>();
         input.add(a);
         input.add(b);
-        input.add(c);
-        GeneralizedSuffixTree st = new GeneralizedSuffixTree(input);
+
+        GeneralizedSuffixTree st = new GeneralizedSuffixTree(input, true);
 //        st.build();
         System.out.println(st.unusedIndexes);
         GSTPrinter.print(st);
@@ -28,7 +28,12 @@ public class Main {
         System.out.println(common1);
         System.out.println("=====");
         FactorCode f = new FactorCode(common1);
-        System.out.println(f.getFactors());
+        System.out.println(f.getIdeals());
+        FactorCode aaca = new FactorCode(new Factor("aaca"));
+        FactorCode c = new FactorCode(new Factor("c"));
+        System.out.println(aaca.join(c).getIdeals());
+
+
 
 //        System.out.println(st.addFactor(c));
 //        GSTPrinter.print(st);

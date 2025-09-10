@@ -1,0 +1,5 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[0] Config.pm:331> INFO - Logfile is 'body_.blg'
+[153] biber-MSWIN64:342> INFO - === 
+[190] Utils.pm:479> ERROR - body_.bcf is malformed, last biblatex run probably failed. Deleted body_.bbl
+[190] Biber.pm:137> INFO - ERRORS: 1
