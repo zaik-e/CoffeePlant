@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k+kd}{public}\PYG{+w}{ }\PYG{k+kd}{class} \PYG{n+nc}{Node}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n+nd}{@Nullable}\PYG{+w}{ }\PYG{n}{Node}\PYG{+w}{ }\PYG{n}{parent}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{start}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{end}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{length}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{depth}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n+nd}{@Nullable}\PYG{+w}{ }\PYG{n}{Node}\PYG{+w}{ }\PYG{n}{suf}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{private}\PYG{+w}{ }\PYG{n+nd}{@NotNull}\PYG{+w}{ }\PYG{n}{HashMap}\PYG{o}{\PYGZlt{}}\PYG{n}{Character}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{children}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{k+kd}{private}\PYG{+w}{ }\PYG{n+nd}{@NotNull}\PYG{+w}{ }\PYG{n}{Set}\PYG{o}{\PYGZlt{}}\PYG{n}{Integer}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{annotation}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kd}{private}\PYG{+w}{ }\PYG{n+nd}{@NotNull}\PYG{+w}{ }\PYG{n}{Set}\PYG{o}{\PYGZlt{}}\PYG{n}{Integer}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{finalOf}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{usedStrIndex}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{c+c1}{// реализация методов}
+\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

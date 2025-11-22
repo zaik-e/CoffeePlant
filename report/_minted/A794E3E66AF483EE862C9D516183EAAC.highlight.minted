@@ -1,0 +1,26 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{+w}{  }\PYG{c+cm}{/* ...}
+\PYG{c+cm}{    методы класса GST}
+\PYG{c+cm}{  */}
+\PYG{+w}{  }\PYG{k+kd}{public}\PYG{+w}{ }\PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Factor}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n+nf}{LCSS}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{divider}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Stack}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{stack}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{new}\PYG{+w}{ }\PYG{n}{Stack}\PYG{o}{\PYGZlt{}\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{        }\PYG{n}{stack}\PYG{p}{.}\PYG{n+na}{push}\PYG{p}{(}\PYG{n}{root}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}}\PYG{n}{Factor}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{result}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{new}\PYG{+w}{ }\PYG{n}{ArrayList}\PYG{o}{\PYGZlt{}\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{while}\PYG{+w}{ }\PYG{p}{(}\PYG{o}{!}\PYG{n}{stack}\PYG{p}{.}\PYG{n+na}{isEmpty}\PYG{p}{())}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{Node}\PYG{+w}{ }\PYG{n}{currNode}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{stack}\PYG{p}{.}\PYG{n+na}{pop}\PYG{p}{();}
+\PYG{+w}{            }\PYG{k+kt}{boolean}\PYG{+w}{ }\PYG{n}{hasDeeper}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{false}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{Node}\PYG{+w}{ }\PYG{n}{child}\PYG{+w}{ }\PYG{p}{:}\PYG{+w}{ }\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{getChildren}\PYG{p}{().}\PYG{n+na}{values}\PYG{p}{())}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{child}\PYG{p}{.}\PYG{n+na}{hasBoth}\PYG{p}{(}\PYG{n}{divider}\PYG{p}{))}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                    }\PYG{n}{stack}\PYG{p}{.}\PYG{n+na}{push}\PYG{p}{(}\PYG{n}{child}\PYG{p}{);}
+\PYG{+w}{                    }\PYG{n}{hasDeeper}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kc}{true}\PYG{p}{;}
+\PYG{+w}{                }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{hasBoth}\PYG{p}{(}\PYG{n}{divider}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{hasDeeper}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{o}{!}\PYG{p}{(}\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{equals}\PYG{p}{(}\PYG{n}{root}\PYG{p}{)))}
+\PYG{+w}{                }\PYG{n}{result}\PYG{p}{.}\PYG{n+na}{add}\PYG{p}{(}\PYG{n}{factors}\PYG{p}{.}\PYG{n+na}{get}\PYG{p}{(}\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{usedStrIndex}\PYG{p}{).}\PYG{n+na}{substring}\PYG{p}{(}
+\PYG{+w}{		    }\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{end}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{depth}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{currNode}\PYG{p}{.}\PYG{n+na}{end}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}
+\PYG{+w}{		}\PYG{p}{));}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{result}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\end{MintedVerbatim}

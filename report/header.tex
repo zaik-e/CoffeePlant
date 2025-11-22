@@ -254,7 +254,7 @@
         \tabtitalign{#3}}                                       % Наименование таблицы строкой ниже
     \captionsetup[table]{labelsep=space}                        % пробельный разделитель идентификатора с номером от наименования
 }
-\captionsetup[table]{format=tablecaption,singlelinecheck=off,font=onehalfspacing,position=top,skip=-5pt}  % многострочные наименования и прочее
+\captionsetup[table]{format=tablecaption,singlelinecheck=off,font=onehalfspacing,position=top,skip=-5pt, margin={1.5cm,0cm}}  % многострочные наименования и прочее
 \DeclareCaptionLabelFormat{continued}{Продолжение таблицы~#2}
 \setlength{\belowcaptionskip}{.2cm}
 \setlength{\intextsep}{0ex}
@@ -339,14 +339,14 @@
 \newcommand{\eng}[1]{\begin{english}#1\end{english}}
 % Подчиненные счетчики в окружениях http://old.kpfu.ru/journals/izv_vuz/arch/sample1251.tex
 \newcounter{cTheorem} 
-\newcounter{cStatement}
 \newcounter{cDefinition}
 \newcounter{cConsequent}
 \newcounter{cExample}
 \newcounter{cLemma}
+\newcounter{cStatement}
 \newcounter{cConjecture}
-\newtheorem{Theorem}{Теорема}[cTheorem]
 \newtheorem{Statement}{Утверждение}[cStatement]
+\newtheorem{Theorem}{Теорема}[cTheorem]
 \newtheorem{Definition}{Определение}[cDefinition]
 \newtheorem{Consequent}{Следствие}[cConsequent]
 \newtheorem{Example}{Пример}[cExample]
@@ -354,8 +354,8 @@
 \newtheorem{Conjecture}{Гипотеза}[cConjecture]
 
 \renewcommand{\theTheorem}{\arabic{Theorem}}
-\renewcommand{\theDefinition}{\arabic{Definition}}
 \renewcommand{\theStatement}{\arabic{Statement}}
+\renewcommand{\theDefinition}{\arabic{Definition}}
 \renewcommand{\theConsequent}{\arabic{Consequent}}
 \renewcommand{\theExample}{\arabic{Example}}
 \renewcommand{\theLemma}{\arabic{Lemma}}
@@ -427,17 +427,6 @@
 \makeatletter
 \renewcommand*{\p@subsubsection}{}
 \makeatother
-
-%forest
-\usepackage[edges]{forest}
-\usepackage{forest}
-
-\tikzset{
-  edgelabel/.style={font=\ttfamily\footnotesize, inner sep=1pt,midway, sloped, above},
-  leaflabel/.style={draw=none, font=\scriptsize\ttfamily}
-}
-
-
 
 \newcommand{\bmstuheader}
 {\vspace*{-30pt}
